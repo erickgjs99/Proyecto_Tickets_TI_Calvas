@@ -102,6 +102,7 @@ Aplicación principal: http://127.0.0.1:8000/
 Panel de Admin Django: http://127.0.0.1:8000/admin/
 
 📁 Estructura del Proyecto
+
 sistema-tickets-ti/
 ├── soporte_ti/                 # Configuración principal
 │   ├── settings.py            # Configuración de Django
@@ -134,6 +135,7 @@ sistema-tickets-ti/
 ├── media/                      # Archivos subidos
 ├── requirements.txt            # Dependencias Python
 └── manage.py                   # Script de gestión Django
+
 🎯 Casos de Uso
 1. Usuario Regular
 1. Login → Dashboard
