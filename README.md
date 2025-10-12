@@ -1,3 +1,12 @@
+🎫 Sistema de Tickets de Soporte TI
+<div align="center">
+https://img.shields.io/badge/Python-3.8+-3776AB?style=for-the-badge&logo=python&logoColor=white
+https://img.shields.io/badge/Django-4.2-092E20?style=for-the-badge&logo=django&logoColor=white
+https://img.shields.io/badge/PostgreSQL-15-336791?style=for-the-badge&logo=postgresql&logoColor=white
+https://img.shields.io/badge/Bootstrap-5.3-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white
+https://img.shields.io/badge/License-MIT-green?style=for-the-badge
+
+
 Sistema completo de gestión de tickets de soporte técnico desarrollado con Django
 Demo • Características • Instalación • Tecnologías
 </div>
