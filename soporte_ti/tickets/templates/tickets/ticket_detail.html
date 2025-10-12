@@ -1,0 +1,176 @@
+{% extends 'tickets/base.html' %}
+
+{% block title %}{{ ticket.ticket_number }} - Detalle{% endblock %}
+
+{% block content %}
+<!-- Botones de acción superiores -->
+<div class="row mb-3">
+    <div class="col">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'user_dashboard' %}">Mis Tickets</a></li>
+                <li class="breadcrumb-item active">{{ ticket.ticket_number }}</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="col-auto">
+        <a href="{% url 'generate_ticket_pdf' ticket.id %}" class="btn btn-danger" target="_blank">
+            <i class="bi bi-file-pdf"></i> Generar PDF
+        </a>
+        {% if user.is_staff %}
+        <a href="{% url 'update_ticket' ticket.id %}" class="btn btn-warning">
+            <i class="bi bi-pencil"></i> Editar
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">{{ ticket.ticket_number }} - {{ ticket.title }}</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <small class="text-muted">Usuario:</small><br>
+                        <strong>{{ ticket.user.username }}</strong>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted">Creado:</small><br>
+                        <strong>{{ ticket.created_at|date:"d/m/Y H:i" }}</strong>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <small class="text-muted">Estado:</small><br>
+                        <span class="badge badge-status-{{ ticket.status }}">{{ ticket.get_status_display }}</span>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted">Prioridad:</small><br>
+                        <span class="badge badge-priority-{{ ticket.priority }}">{{ ticket.get_priority_display }}</span>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted">Categoría:</small><br>
+                        <span class="badge bg-secondary">{{ ticket.get_category_display }}</span>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <h6 class="text-muted">Descripción:</h6>
+                <p>{{ ticket.description }}</p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header bg-light">
+                <h6 class="mb-0"><i class="bi bi-chat-left-text"></i> Comentarios ({{ comments.count }})</h6>
+            </div>
+            <div class="card-body">
+                {% for comment in comments %}
+                <div class="mb-3 pb-3 {% if not forloop.last %}border-bottom{% endif %}">
+                    <div class="d-flex justify-content-between mb-2">
+                        <strong>{{ comment.user.username }}</strong>
+                        <small class="text-muted">{{ comment.created_at|date:"d/m/Y H:i" }}</small>
+                    </div>
+                    <p class="mb-0">{{ comment.text }}</p>
+                </div>
+                {% empty %}
+                <p class="text-muted text-center mb-0">No hay comentarios aún.</p>
+                {% endfor %}
+                
+                <hr>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.text }}
+                    <button type="submit" class="btn btn-primary mt-2">
+                        <i class="bi bi-send"></i> Agregar Comentario
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header bg-light">
+                <h6 class="mb-0"><i class="bi bi-info-circle"></i> Información del Ticket</h6>
+            </div>
+            <div class="card-body">
+                <!-- Creado por -->
+                <div class="mb-3 pb-3 border-bottom">
+                    <h6 class="text-muted mb-2">
+                        <i class="bi bi-person-fill"></i> Creado por:
+                    </h6>
+                    <p class="mb-1">
+                        <strong>{{ ticket.user.get_full_name|default:ticket.user.username }}</strong>
+                    </p>
+                    {% if ticket.user.profile.cargo %}
+                    <p class="mb-1 small">
+                        <i class="bi bi-briefcase"></i> <strong>Cargo:</strong> {{ ticket.user.profile.cargo }}
+                    </p>
+                    {% endif %}
+                    {% if ticket.user.profile.departamento %}
+                    <p class="mb-1 small">
+                        <i class="bi bi-building"></i> <strong>Departamento:</strong> {{ ticket.user.profile.departamento }}
+                    </p>
+                    {% endif %}
+                    {% if ticket.user.email %}
+                    <p class="mb-1 small">
+                        <i class="bi bi-envelope"></i> {{ ticket.user.email }}
+                    </p>
+                    {% endif %}
+                    {% if ticket.user.profile.telefono %}
+                    <p class="mb-0 small">
+                        <i class="bi bi-telephone"></i> {{ ticket.user.profile.telefono }}
+                        {% if ticket.user.profile.extension %}
+                        Ext. {{ ticket.user.profile.extension }}
+                        {% endif %}
+                    </p>
+                    {% endif %}
+                </div>
+                
+                <!-- Asignado a -->
+                <div class="mb-3 pb-3 border-bottom">
+                    <h6 class="text-muted mb-2">
+                        <i class="bi bi-person-check"></i> Asignado a:
+                    </h6>
+                    {% if ticket.assigned_to %}
+                        <p class="mb-1">
+                            <strong>{{ ticket.assigned_to.get_full_name|default:ticket.assigned_to.username }}</strong>
+                        </p>
+                        {% if ticket.assigned_to.profile.cargo %}
+                        <p class="mb-1 small">
+                            <i class="bi bi-briefcase"></i> {{ ticket.assigned_to.profile.cargo }}
+                        </p>
+                        {% endif %}
+                        {% if ticket.assigned_to.profile.departamento %}
+                        <p class="mb-0 small">
+                            <i class="bi bi-building"></i> {{ ticket.assigned_to.profile.departamento }}
+                        </p>
+                        {% endif %}
+                    {% else %}
+                        <span class="text-muted">Sin asignar</span>
+                    {% endif %}
+                </div>
+                
+                <!-- Última actualización -->
+                <p class="mb-3">
+                    <strong><i class="bi bi-clock-history"></i> Última actualización:</strong><br>
+                    {{ ticket.updated_at|date:"d/m/Y H:i" }}
+                </p>
+                
+                {% if user.is_staff %}
+                <a href="{% url 'update_ticket' ticket.id %}" class="btn btn-warning w-100">
+                    <i class="bi bi-pencil"></i> Editar Ticket
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

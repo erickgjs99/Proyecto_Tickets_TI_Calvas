@@ -1,0 +1,251 @@
+{% extends 'tickets/base.html' %}
+
+{% block title %}{{ action }} Usuario{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'admin_dashboard' %}">Panel Admin</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'user_list' %}">Usuarios</a></li>
+                <li class="breadcrumb-item active">{{ action }} Usuario</li>
+            </ol>
+        </nav>
+
+        <div class="card shadow-sm">
+            <div class="card-header"
+                style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white;">
+                <h4 class="mb-0">
+                    <i class="bi bi-person-plus-fill"></i> {{ action }} Usuario
+                </h4>
+            </div>
+
+            <div class="card-body p-4">
+                <form method="post" id="userForm">
+                    {% csrf_token %}
+
+                    <!-- Información de Cuenta -->
+                    <div class="card border-primary mb-4">
+                        <div class="card-header bg-primary bg-opacity-10">
+                            <h6 class="mb-0 text-primary">
+                                <i class="bi bi-person-badge"></i> Información de Cuenta
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">
+                                        <i class="bi bi-at"></i> Nombre de Usuario *
+                                    </label>
+                                    {{ form.username }}
+                                    {% if form.username.errors %}
+                                    <div class="text-danger small mt-1">{{ form.username.errors }}</div>
+                                    {% endif %}
+                                    <small class="form-text text-muted">
+                                        Usado para iniciar sesión (sin espacios)
+                                    </small>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">
+                                        <i class="bi bi-envelope"></i> Email *
+                                    </label>
+                                    {{ form.email }}
+                                    {% if form.email.errors %}
+                                    <div class="text-danger small mt-1">{{ form.email.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            {% if action == "Crear" %}
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">
+                                        <i class="bi bi-key"></i> Contraseña *
+                                    </label>
+                                    {{ form.password1 }}
+                                    {% if form.password1.errors %}
+                                    <div class="text-danger small mt-1">{{ form.password1.errors }}</div>
+                                    {% endif %}
+                                    <small class="form-text text-muted">
+                                        Mínimo 8 caracteres
+                                    </small>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">
+                                        <i class="bi bi-key-fill"></i> Confirmar Contraseña *
+                                    </label>
+                                    {{ form.password2 }}
+                                    {% if form.password2.errors %}
+                                    <div class="text-danger small mt-1">{{ form.password2.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Información Personal -->
+                    <div class="card border-success mb-4">
+                        <div class="card-header bg-success bg-opacity-10">
+                            <h6 class="mb-0 text-success">
+                                <i class="bi bi-person-vcard"></i> Información Personal
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">
+                                        <i class="bi bi-person"></i> Nombres *
+                                    </label>
+                                    {{ form.first_name }}
+                                    {% if form.first_name.errors %}
+                                    <div class="text-danger small mt-1">{{ form.first_name.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">
+                                        <i class="bi bi-person-fill"></i> Apellidos *
+                                    </label>
+                                    {{ form.last_name }}
+                                    {% if form.last_name.errors %}
+                                    <div class="text-danger small mt-1">{{ form.last_name.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">
+                                        <i class="bi bi-briefcase"></i> Cargo
+                                    </label>
+                                    {{ form.cargo }}
+                                    {% if form.cargo.errors %}
+                                    <div class="text-danger small mt-1">{{ form.cargo.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">
+                                        <i class="bi bi-building"></i> Departamento
+                                    </label>
+                                    {{ form.departamento }}
+                                    {% if form.departamento.errors %}
+                                    <div class="text-danger small mt-1">{{ form.departamento.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">
+                                        <i class="bi bi-telephone"></i> Teléfono
+                                    </label>
+                                    {{ form.telefono }}
+                                    {% if form.telefono.errors %}
+                                    <div class="text-danger small mt-1">{{ form.telefono.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">
+                                        <i class="bi bi-phone"></i> Extensión
+                                    </label>
+                                    {{ form.extension }}
+                                    {% if form.extension.errors %}
+                                    <div class="text-danger small mt-1">{{ form.extension.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">
+                                        <i class="bi bi-phone"></i> Celular
+                                    </label>
+                                    {{ form.celular }}
+                                    {% if form.celular.errors %}
+                                    <div class="text-danger small mt-1">{{ form.celular.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Permisos y Estado -->
+                    <div class="card border-warning mb-4">
+                        <div class="card-header bg-warning bg-opacity-10">
+                            <h6 class="mb-0 text-warning">
+                                <i class="bi bi-shield-lock"></i> Permisos y Estado
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-check form-switch">
+                                        {{ form.is_staff }}
+                                        <label class="form-check-label fw-bold" for="{{ form.is_staff.id_for_label }}">
+                                            <i class="bi bi-shield-check"></i> Usuario Staff
+                                        </label>
+                                        <small class="form-text text-muted d-block">
+                                            Permite acceso al panel de administración
+                                        </small>
+                                    </div>
+                                </div>
+
+                                {% if action == "Editar" %}
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-check form-switch">
+                                        {{ form.is_active }}
+                                        <label class="form-check-label fw-bold" for="{{ form.is_active.id_for_label }}">
+                                            <i class="bi bi-toggle-on"></i> Usuario Activo
+                                        </label>
+                                        <small class="form-text text-muted d-block">
+                                            El usuario puede iniciar sesión
+                                        </small>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Información Adicional -->
+                    <div class="alert alert-info border-start border-4 border-info">
+                        <h6 class="alert-heading">
+                            <i class="bi bi-info-circle"></i> Información Importante
+                        </h6>
+                        <ul class="mb-0 small">
+                            <li>Los campos marcados con * son obligatorios</li>
+                            <li>El nombre de usuario debe ser único en el sistema</li>
+                            {% if action == "Crear" %}
+                            <li>La contraseña debe tener al menos 8 caracteres</li>
+                            <li>El usuario recibirá sus credenciales por email (si está configurado)</li>
+                            {% else %}
+                            <li>Para cambiar la contraseña, usa la opción "Cambiar contraseña" en el menú</li>
+                            {% endif %}
+                            <li>Los usuarios Staff pueden gestionar tickets y usuarios</li>
+                        </ul>
+                    </div>
+
+                    <!-- Botones de Acción -->
+                    <div class="d-flex gap-2 justify-content-end pt-3 border-top">
+                        <a href="{% url 'user_list' %}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-circle"></i> {{ action }} Usuario
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('userForm').add
+</script>
+{% endblock %}

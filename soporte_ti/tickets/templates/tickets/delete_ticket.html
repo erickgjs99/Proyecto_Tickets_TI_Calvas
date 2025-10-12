@@ -1,0 +1,169 @@
+{% extends 'tickets/base.html' %}
+
+{% block title %}Eliminar Ticket - {{ ticket.ticket_number }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'admin_dashboard' %}">Panel Admin</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'ticket_detail' ticket.id %}">{{ ticket.ticket_number }}</a></li>
+                <li class="breadcrumb-item active">Eliminar</li>
+            </ol>
+        </nav>
+
+        <div class="card shadow-sm border-danger">
+            <div class="card-header bg-danger text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        <i class="bi bi-exclamation-triangle-fill"></i> Eliminar Ticket
+                    </h4>
+                    <span class="badge bg-light text-danger">{{ ticket.ticket_number }}</span>
+                </div>
+            </div>
+            
+            <div class="card-body p-4">
+                <!-- Alerta de advertencia -->
+                <div class="alert alert-danger border-start border-4 border-danger">
+                    <h5 class="alert-heading">
+                        <i class="bi bi-exclamation-octagon"></i> ¡Advertencia! Esta acción no se puede deshacer
+                    </h5>
+                    <p class="mb-0">
+                        Estás a punto de eliminar permanentemente este ticket y toda su información asociada, 
+                        incluyendo comentarios y historial. Esta acción es <strong>irreversible</strong>.
+                    </p>
+                </div>
+
+                <!-- Información del Ticket -->
+                <div class="card border-danger mb-4">
+                    <div class="card-header bg-danger bg-opacity-10">
+                        <h6 class="mb-0 text-danger">
+                            <i class="bi bi-info-circle"></i> Información del Ticket a Eliminar
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <strong><i class="bi bi-hash"></i> Número de Ticket:</strong><br>
+                                <span class="ms-4 text-primary">{{ ticket.ticket_number }}</span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong><i class="bi bi-person"></i> Usuario:</strong><br>
+                                <span class="ms-4">{{ ticket.user.get_full_name|default:ticket.user.username }}</span>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <strong><i class="bi bi-card-heading"></i> Título:</strong><br>
+                                <span class="ms-4">{{ ticket.title }}</span>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <strong><i class="bi bi-flag"></i> Estado:</strong><br>
+                                <span class="badge badge-status-{{ ticket.status }} ms-4">{{ ticket.get_status_display }}</span>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <strong><i class="bi bi-exclamation-triangle"></i> Prioridad:</strong><br>
+                                <span class="badge badge-priority-{{ ticket.priority }} ms-4">{{ ticket.get_priority_display }}</span>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <strong><i class="bi bi-tag"></i> Categoría:</strong><br>
+                                <span class="badge bg-secondary ms-4">{{ ticket.get_category_display }}</span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong><i class="bi bi-calendar-check"></i> Creado:</strong><br>
+                                <span class="ms-4">{{ ticket.created_at|date:"d/m/Y H:i" }}</span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong><i class="bi bi-chat-dots"></i> Comentarios:</strong><br>
+                                <span class="ms-4">{{ ticket.comments.count }} comentario{{ ticket.comments.count|pluralize }}</span>
+                            </div>
+                            <div class="col-12">
+                                <strong><i class="bi bi-chat-left-text"></i> Descripción:</strong><br>
+                                <div class="ms-4 mt-2 p-3 bg-light rounded">
+                                    {{ ticket.description }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Información adicional -->
+                <div class="alert alert-warning border-start border-4 border-warning">
+                    <h6 class="alert-heading">
+                        <i class="bi bi-info-circle"></i> También se eliminará:
+                    </h6>
+                    <ul class="mb-0">
+                        <li><strong>{{ ticket.comments.count }}</strong> comentario{{ ticket.comments.count|pluralize }} asociado{{ ticket.comments.count|pluralize }} a este ticket</li>
+                        <li>Todo el historial de cambios del ticket</li>
+                        <li>Asignaciones y referencias relacionadas</li>
+                    </ul>
+                </div>
+
+                <!-- Formulario de confirmación -->
+                <form method="post" id="deleteForm">
+                    {% csrf_token %}
+                    
+                    <div class="form-check mb-4">
+                        <input class="form-check-input" type="checkbox" id="confirmDelete" required>
+                        <label class="form-check-label fw-bold" for="confirmDelete">
+                            Confirmo que deseo eliminar este ticket permanentemente
+                        </label>
+                    </div>
+
+                    <!-- Botones de Acción -->
+                    <div class="d-flex gap-2 justify-content-end pt-3 border-top">
+                        <a href="{% url 'ticket_detail' ticket.id %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-eye"></i> Ver Ticket
+                        </a>
+                        <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-danger" id="deleteButton" disabled>
+                            <i class="bi bi-trash"></i> Eliminar Permanentemente
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Alternativas sugeridas -->
+        <div class="card mt-3 border-info">
+            <div class="card-body">
+                <h6 class="text-info">
+                    <i class="bi bi-lightbulb"></i> ¿Consideraste estas alternativas?
+                </h6>
+                <ul class="small mb-0">
+                    <li>En lugar de eliminar, puedes <strong>cerrar el ticket</strong> desde la opción de editar</li>
+                    <li>Los tickets cerrados se mantienen para referencia histórica</li>
+                    <li>Puedes exportar la información antes de eliminar</li>
+                </ul>
+                <div class="mt-3">
+                    <a href="{% url 'update_ticket' ticket.id %}" class="btn btn-sm btn-info">
+                        <i class="bi bi-pencil"></i> Mejor Editar Este Ticket
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script para habilitar botón de eliminar -->
+<script>
+document.getElementById('confirmDelete').addEventListener('change', function() {
+    document.getElementById('deleteButton').disabled = !this.checked;
+});
+
+document.getElementById('deleteForm').addEventListener('submit', function(e) {
+    const confirmed = confirm(
+        '⚠️ ÚLTIMA ADVERTENCIA\n\n' +
+        'Esta es tu última oportunidad para cancelar.\n' +
+        'El ticket "{{ ticket.ticket_number }}" será eliminado PERMANENTEMENTE.\n\n' +
+        '¿Estás ABSOLUTAMENTE seguro de continuar?'
+    );
+    
+    if (!confirmed) {
+        e.preventDefault();
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,139 @@
+{% extends 'tickets/base.html' %}
+
+{% block title %}Eliminar Usuario - {{ user_obj.username }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'admin_dashboard' %}">Panel Admin</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'user_list' %}">Usuarios</a></li>
+                <li class="breadcrumb-item active">Eliminar</li>
+            </ol>
+        </nav>
+
+        <div class="card shadow-sm border-danger">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-exclamation-triangle-fill"></i> Eliminar Usuario
+                </h4>
+            </div>
+            
+            <div class="card-body p-4">
+                <!-- Alerta de advertencia -->
+                <div class="alert alert-danger border-start border-4 border-danger">
+                    <h5 class="alert-heading">
+                        <i class="bi bi-exclamation-octagon"></i> ¡Advertencia! Esta acción no se puede deshacer
+                    </h5>
+                    <p class="mb-0">
+                        Estás a punto de eliminar permanentemente este usuario. Todos sus tickets y comentarios 
+                        permanecerán en el sistema, pero no se podrá identificar al usuario eliminado. 
+                        Esta acción es <strong>irreversible</strong>.
+                    </p>
+                </div>
+
+                <!-- Información del Usuario -->
+                <div class="card border-danger mb-4">
+                    <div class="card-header bg-danger bg-opacity-10">
+                        <h6 class="mb-0 text-danger">
+                            <i class="bi bi-person-x"></i> Información del Usuario a Eliminar
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <strong><i class="bi bi-at"></i> Nombre de Usuario:</strong><br>
+                                <span class="ms-4 text-primary">{{ user_obj.username }}</span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong><i class="bi bi-envelope"></i> Email:</strong><br>
+                                <span class="ms-4">{{ user_obj.email|default:"Sin email" }}</span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong><i class="bi bi-person"></i> Nombre Completo:</strong><br>
+                                <span class="ms-4">{{ user_obj.get_full_name|default:"-" }}</span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong><i class="bi bi-shield"></i> Rol:</strong><br>
+                                {% if user_obj.is_staff %}
+                                    <span class="badge bg-warning ms-4">Staff</span>
+                                {% else %}
+                                    <span class="badge bg-secondary ms-4">Usuario</span>
+                                {% endif %}
+                            </div>
+                            {% if user_obj.profile.cargo %}
+                            <div class="col-md-6 mb-3">
+                                <strong><i class="bi bi-briefcase"></i> Cargo:</strong><br>
+                                <span class="ms-4">{{ user_obj.profile.cargo }}</span>
+                            </div>
+                            {% endif %}
+                            {% if user_obj.profile.departamento %}
+                            <div class="col-md-6 mb-3">
+                                <strong><i class="bi bi-building"></i> Departamento:</strong><br>
+                                <span class="ms-4">{{ user_obj.profile.departamento }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estadísticas del Usuario -->
+                <div class="alert alert-warning border-start border-4 border-warning">
+                    <h6 class="alert-heading">
+                        <i class="bi bi-info-circle"></i> Información sobre los datos del usuario:
+                    </h6>
+                    <ul class="mb-0">
+                        <li><strong>{{ user_obj.tickets.count }}</strong> ticket{{ user_obj.tickets.count|pluralize }} creado{{ user_obj.tickets.count|pluralize }} por este usuario</li>
+                        <li><strong>{{ user_obj.assigned_tickets.count }}</strong> ticket{{ user_obj.assigned_tickets.count|pluralize }} asignado{{ user_obj.assigned_tickets.count|pluralize }} a este usuario</li>
+                        <li>Los tickets y comentarios NO se eliminarán, solo se desvinculará el usuario</li>
+                        <li>Esta acción no puede revertirse</li>
+                    </ul>
+                </div>
+
+                <!-- Formulario de confirmación -->
+                <form method="post" id="deleteForm">
+                    {% csrf_token %}
+                    
+                    <div class="form-check mb-4">
+                        <input class="form-check-input" type="checkbox" id="confirmDelete" required>
+                        <label class="form-check-label fw-bold" for="confirmDelete">
+                            Confirmo que deseo eliminar este usuario permanentemente
+                        </label>
+                    </div>
+
+                    <!-- Botones de Acción -->
+                    <div class="d-flex gap-2 justify-content-end pt-3 border-top">
+                        <a href="{% url 'user_list' %}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-danger" id="deleteButton" disabled>
+                            <i class="bi bi-trash"></i> Eliminar Permanentemente
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('confirmDelete').addEventListener('change', function() {
+    document.getElementById('deleteButton').disabled = !this.checked;
+});
+
+document.getElementById('deleteForm').addEventListener('submit', function(e) {
+    const confirmed = confirm(
+        '⚠️ ÚLTIMA ADVERTENCIA\n\n' +
+        'Esta es tu última oportunidad para cancelar.\n' +
+        'El usuario "{{ user_obj.username }}" será eliminado PERMANENTEMENTE.\n\n' +
+        '¿Estás ABSOLUTAMENTE seguro de continuar?'
+    );
+    
+    if (!confirmed) {
+        e.preventDefault();
+    }
+});
+</script>
+{% endblock %}
