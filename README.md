@@ -247,9 +247,9 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo LICENSE para más detal
 👨‍💻 Autor
 Tu Nombre
 
-GitHub: @tu-usuario
-LinkedIn: Tu Perfil
-Email: tu-email@ejemplo.com
+GitHub: @erickgjs99
+LinkedIn: https://www.linkedin.com/in/erick-gonzalo-jaramillo-soto-191a20167/
+Email: erickwork99@gmail.com
 
 🙏 Agradecimientos
 
